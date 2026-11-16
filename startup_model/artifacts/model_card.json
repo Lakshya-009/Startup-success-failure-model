@@ -1,0 +1,115 @@
+{
+  "model_version": "0.1.0",
+  "trained_on": "2026-11-06",
+  "sklearn_version": "1.9.1",
+  "pandas_version": "3.0.6",
+  "numpy_version": "2.5.4",
+  "algorithm": "Logistic regression (class_weight=balanced, C=0.3); funding via cubic spline of log1p(USD millions); one-hot country + industry",
+  "label": "1 = became a unicorn / exited (IPO, acquired, still operating as unicorn); 0 = failed (shut down / bankrupt / in failures list)",
+  "inputs": {
+    "funding_usd_millions": "float >= 0, millions of USD, total raised",
+    "country": "free text -> normalised",
+    "industry": "one of ['fintech', 'health', 'edu', 'mobility_hw', 'commerce_logistics', 'software_ai', 'media_social', 'other'] or free text mapped by keywords"
+  },
+  "training_rows": 1134,
+  "class_counts": {
+    "succeeded": 298,
+    "failed": 836
+  },
+  "cv_5fold_x3": {
+    "auc": {
+      "mean": 0.8297,
+      "std": 0.0266
+    },
+    "balanced_acc": {
+      "mean": 0.7508,
+      "std": 0.0379
+    },
+    "accuracy": {
+      "mean": 0.7381,
+      "std": 0.0323
+    },
+    "f1_success": {
+      "mean": 0.6095,
+      "std": 0.0444
+    },
+    "brier": {
+      "mean": 0.1701,
+      "std": 0.0113
+    }
+  },
+  "baseline": {
+    "majority_class_accuracy": 0.7372,
+    "majority_class_balanced_accuracy": 0.5,
+    "random_auc": 0.5
+  },
+  "score_bands": {
+    "failure_like": {
+      "rule": "score < 0.35",
+      "n": 514,
+      "share_actually_failed": 0.932
+    },
+    "mixed": {
+      "rule": "0.35 <= score <= 0.65",
+      "n": 330,
+      "share_actually_succeeded": 0.261
+    },
+    "success_like": {
+      "rule": "score > 0.65",
+      "n": 290,
+      "share_actually_succeeded": 0.61
+    }
+  },
+  "calibration_bins": [
+    {
+      "low": 0,
+      "high": 0.2,
+      "n": 343,
+      "success_rate": 0.038
+    },
+    {
+      "low": 0.2,
+      "high": 0.35,
+      "n": 171,
+      "success_rate": 0.129
+    },
+    {
+      "low": 0.35,
+      "high": 0.5,
+      "n": 152,
+      "success_rate": 0.191
+    },
+    {
+      "low": 0.5,
+      "high": 0.65,
+      "n": 178,
+      "success_rate": 0.32
+    },
+    {
+      "low": 0.65,
+      "high": 0.8,
+      "n": 150,
+      "success_rate": 0.54
+    },
+    {
+      "low": 0.8,
+      "high": 1.0,
+      "n": 140,
+      "success_rate": 0.686
+    }
+  ],
+  "funding_percentiles_usd_m": {
+    "0.1": 4.73,
+    "0.25": 25.0,
+    "0.5": 146.4,
+    "0.75": 529.75,
+    "0.9": 1300.0
+  },
+  "limitations": [
+    "Score is a similarity-to-groups score from a class-balanced model; it is NOT the real-world probability a startup succeeds.",
+    "Training data = notable/well-funded companies (unicorn list + published failures); very small startups are out of range.",
+    "Country and industry signal partly reflects which kinds of companies appear in each source list.",
+    "Success means unicorn/exit, not 'profitable small business'.",
+    "Files are two different sources, so rows with missing fields were excluded from training to avoid learning the source."
+  ]
+}
